@@ -1,15 +1,13 @@
 (local std (include :std))
 (require-macros :std-macros)
 
+;; https://www.redblobgames.com/grids/hexagons/
+
 (local *forward* [(math.sqrt 3) (/ (math.sqrt 3) 2) 0 (/ 3 2)])
 (local *inverse* [(/ (math.sqrt 3) 3) (/ -1 3) 0 (/ 2 3)])
 
-(var origin [400 300])
-
-(var scale 100.0)
-
-(fn hex->pixel
-  [[q r s]]
+(lambda hex->pixel
+  [[q r s] origin scale]
   (let [[ox oy] origin
         [f0 f1 f2 f3] *forward*]
     [(+ (* scale (+ (* f0 q) (* f1 r))) ox)
@@ -22,7 +20,7 @@
         i
         (+ 1 i))))
 
-(fn hex-round
+(lambda hex-round
   [hex-coords]
   ;; Rounding isn't straightforwards...
   (let [[q r s] (std.map math.round hex-coords)
@@ -32,8 +30,8 @@
      (> rd sd) [q (- (+ q s)) s]
      :else [q r (- (+ q r))])))
 
-(fn pixel->hex
-  [[x y]]
+(lambda pixel->hex
+  [[x y] origin scale]
   (let [[ox oy] origin
         [ux uy] [(/ (- x ox) scale) (/ (- y oy) scale)]
         [r0 r1 r2 r3] *inverse*
@@ -46,8 +44,8 @@
   ;; Ir = cos(pi/6) * Ro = sqrt(3) / 2 * ro
   (* ro (/ (math.sqrt 3) 2)))
 
-(fn draw-hex
-  [[x y]]
+(lambda draw-hex
+  [[x y] origin scale]
   (let [ro scale
         ri (ro->ri scale)]
     (love.graphics.polygon
@@ -59,25 +57,13 @@
      (- x ri) (+ y (/ ro 2))
      (- x ri) (- y (/ ro 2)))))
 
-(fn debug-hex
+(lambda debug-hex
   [[q r s] [x y]]
   (love.graphics.print
    (.. q ", " r ", " s)
    x y))
 
-(fn set-origin
-  [new-origin]
-  (set origin new-origin))
-
-(fn set-scale
-  [new-scale]
-  (set scale new-scale))
-
 {:hex->pixel hex->pixel
  :pixel->hex pixel->hex
  :draw-hex draw-hex
- :debug-hex debug-hex
- :origin origin
- :scale scale
- :set-origin set-origin
- :set-scale set-scale}
+ :debug-hex debug-hex}

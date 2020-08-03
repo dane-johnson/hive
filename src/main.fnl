@@ -4,15 +4,13 @@
 (local {: hex->pixel
         : pixel->hex
         : draw-hex
-        : debug-hex
-        : origin
-        : scale
-        : set-origin
-        : set-scale} (include :hex))
-
-;; https://www.redblobgames.com/grids/hexagons/
+        : debug-hex}
+       (include :hex))
 
 (local *zoom-speed* 10.0)
+
+(var origin [400 300])
+(var scale 100.0)
 
 (var mode :point)
 
@@ -43,12 +41,6 @@
             (values (string->hex prev) (. board prev)))
           nil))))
 
-(fn hex=
-  [[q1 r1 s1] [q2 r2 s2]]
-  (and (= q1 q2)
-       (= r1 r2)
-       (= s1 s2)))
-
 (fn love.load
   []
   (std.apply love.mouse.setPosition origin)
@@ -63,14 +55,14 @@
 
 (fn love.wheelmoved
   [_ y]
-  (set-scale (math.max
+  (set scale (math.max
               (+ scale (* *zoom-speed* y))
               2.0)))
 
 (fn pan
   [x y]
   (let [[ox oy] origin]
-    (set-origin
+    (set origin
          [(+ x ox)
           (+ y oy)])))
 
@@ -91,16 +83,16 @@
   (match button
     1 (do
         (set mode :point)
-        (board-insert (pixel->hex [(love.mouse.getPosition)]) [:white :queen]))
+        (board-insert (pixel->hex [(love.mouse.getPosition)] origin scale) [:white :queen]))
     3 (set mode :point)))
 
 (fn love.draw
   [dt]
   (each [hex-coord hex-type (board-iterate)]
-    (draw-hex (hex->pixel hex-coord))
+    (draw-hex (hex->pixel hex-coord origin scale) origin scale)
     ;(debug-hex hex-coord (hex->pixel hex-coord))
     )
   (when (= mode :drag)
-    (draw-hex [(love.mouse.getPosition)]))
-  (let [[q r s] (pixel->hex [(love.mouse.getPosition)])]
+    (draw-hex [(love.mouse.getPosition)] origin scale))
+  (let [[q r s] (pixel->hex [(love.mouse.getPosition)] origin scale)]
     (love.graphics.print (hex->string [q r s]))))

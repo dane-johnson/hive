@@ -1,0 +1,3 @@
+[submodule "fennel-std-library"]
+	path = fennel-std-library
+	url = git@github.com:dane-johnson/fennel-std-library

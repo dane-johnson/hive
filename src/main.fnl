@@ -47,10 +47,7 @@
 
 (fn love.load
   []
-  (std.apply love.mouse.setPosition origin)
-  (std.foreach board-insert
-               [[0 0 0] [1 0 -1] [0 1 -1]]
-               [[:white :queen] [:black :queen] [:black :ant]]))
+  (std.apply love.mouse.setPosition origin))
 
 (fn love.update
   [dt]

@@ -1,3 +1,4 @@
 std*.fnl
 out/*
 build/*
+localconfig.mk

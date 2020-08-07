@@ -1,3 +1,4 @@
+-include "./localconfig.mk"
 SRCDIR=src
 OUTDIR=out
 BUILDDIR=build
@@ -7,7 +8,11 @@ LOVE_ANDROID=${HOME}/srcbuilds/love-android/
 SRCS=$(wildcard $(SRCDIR)/*.fnl)
 
 .PHONY: all play playmobile
+ifdef MOBILE
 all: $(BUILDDIR)/hive.love $(BUILDDIR)/hive.apk
+else
+all: $(BUILDDIR)/hive.love
+endif
 play: $(BUILDDIR)/hive.love
 	love $<
 playmobile: $(BUILDDIR)/hive.apk
